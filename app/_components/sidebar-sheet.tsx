@@ -1,95 +1,94 @@
 "use client"
+
+import {
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/app/_components/ui/sheet"
+import { Avatar, AvatarImage } from "./ui/avatar"
 import { Button } from "./ui/button"
 import {
   CalendarIcon,
-  DollarSignIcon,
   HomeIcon,
   LogInIcon,
   LogOutIcon,
+  UserIcon,
 } from "lucide-react"
-import { SheetClose, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet"
 import Link from "next/link"
+import { signIn, signOut } from "next-auth/react"
+import { Session } from "next-auth" // Importe o tipo Session
 
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
-import { signOut, useSession } from "next-auth/react"
-import { Avatar, AvatarImage } from "./ui/avatar"
-import SignInDialog from "./sing-in-dialog"
+// Aceite os dados da sessão como uma prop
+interface SidebarSheetProps {
+  session: Session | null | undefined
+}
 
-const SidebarSheet = () => {
-  const { data } = useSession()
+const SidebarSheet = ({ session }: SidebarSheetProps) => {
   const handleLogoutClick = () => signOut()
+  const handleLoginClick = () => signIn("google")
 
   return (
-    <SheetContent className="overflow-y-auto">
-      <SheetHeader>
-        <SheetTitle className="text-left">Menu</SheetTitle>
+    <SheetContent className="p-0">
+      <SheetHeader className="border-b border-solid p-5 text-left">
+        <SheetTitle>Menu</SheetTitle>
       </SheetHeader>
 
-      <div className="flex items-center justify-between gap-3 border-b border-solid py-5">
-        {data?.user ? (
-          <div className="flex items-center gap-2">
-            <Avatar>
-              <AvatarImage
-                src={data?.user?.image ?? ""}
-                height={18}
-                width={18}
-              />
-            </Avatar>
-
-            <div>
-              <p className="font-bold">{data.user.name}</p>
-              <p className="text-xs">{data.user.email}</p>
+      {session?.user ? (
+        // Vista para utilizador autenticado
+        <div className="flex h-full flex-col justify-between px-5 py-6">
+          <div>
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src={session.user.image ?? ""} />
+              </Avatar>
+              <h2 className="font-bold">{session.user.name}</h2>
+            </div>
+            <div className="mt-6 flex flex-col gap-3">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                asChild
+              >
+                <Link href="/">
+                  <HomeIcon size={18} />
+                  Início
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                asChild
+              >
+                <Link href="/appointments">
+                  <CalendarIcon size={18} />
+                  Agendamentos
+                </Link>
+              </Button>
             </div>
           </div>
-        ) : (
-          <>
-            <h2 className="font-bold">Olá, faça seu login!</h2>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="icon">
-                  <LogInIcon />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-[90%]">
-                <SignInDialog />
-              </DialogContent>
-            </Dialog>
-          </>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2 border-b border-solid py-5">
-        <SheetClose asChild>
-          <Button className="justify-start gap-2" variant="ghost" asChild>
-            <Link href="/">
-              <HomeIcon size={18} />
-              Início
-            </Link>
-          </Button>
-        </SheetClose>
-        <Button className="justify-start gap-2" variant="ghost" asChild>
-          <Link href="/bookings">
-            <CalendarIcon size={18} />
-            Agendamentos
-          </Link>
-        </Button>
-
-        <Button className="justify-start gap-2" variant="ghost" asChild>
-          <Link href="/finance">
-            <DollarSignIcon size={18} /> Financeiro
-          </Link>
-        </Button>
-      </div>
-
-      {data?.user && (
-        <div className="flex flex-col gap-2 py-5">
           <Button
-            variant="ghost"
-            className="justify-start gap-2"
+            variant="destructive"
+            className="w-full justify-start gap-2"
             onClick={handleLogoutClick}
           >
             <LogOutIcon size={18} />
-            Sair da conta
+            Sair
+          </Button>
+        </div>
+      ) : (
+        // Vista para convidado
+        <div className="flex flex-col gap-3 px-5 py-6">
+          <div className="flex items-center gap-2">
+            <UserIcon size={32} />
+            <h2 className="font-bold">Olá, faça seu login!</h2>
+          </div>
+          <Button
+            variant="secondary"
+            className="w-full justify-start gap-2"
+            onClick={handleLoginClick}
+          >
+            <LogInIcon size={18} />
+            Fazer Login
           </Button>
         </div>
       )}

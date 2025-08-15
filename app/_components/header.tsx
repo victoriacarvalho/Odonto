@@ -1,12 +1,9 @@
-"use client" // Adicione esta diretiva no topo do ficheiro
+// "use client" foi removido. Este é agora um Componente de Servidor.
 
 import Image from "next/image"
 import { Card, CardContent } from "./ui/card"
-import SidebarSheet from "./sidebar-sheet"
-import { Button } from "./ui/button"
-import { Sheet, SheetTrigger } from "./ui/sheet"
-import { MenuIcon } from "lucide-react"
 import Link from "next/link"
+import SideMenu from "./SideMenu" // Importa o novo componente de cliente
 
 const Header = () => {
   return (
@@ -16,15 +13,8 @@ const Header = () => {
           <Image alt="Logo" width={170} height={38} src="/logo.png" />
         </Link>
 
-        {/* O Sheet e o SidebarSheet agora serão renderizados como parte de um Client Component */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <MenuIcon />
-            </Button>
-          </SheetTrigger>
-          <SidebarSheet />
-        </Sheet>
+        {/* Usa o componente que encapsula a lógica do lado do cliente */}
+        <SideMenu />
       </CardContent>
     </Card>
   )

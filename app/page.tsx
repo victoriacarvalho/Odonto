@@ -2,14 +2,13 @@ import Header from "./_components/header"
 import Image from "next/image"
 import { db } from "./_lib/prisma"
 import DentistItem from "./_components/DentistItem"
-import ServiceItem from "./_components/ServiceItem"
 import AppointmentItem from "./_components/AppointmentItem"
 import Search from "./_components/search"
 import { getServerSession } from "next-auth"
 import { authOptions } from "./_lib/auth"
 import { ptBR } from "date-fns/locale/pt-BR"
 import { format } from "date-fns"
-import { Key } from "react"
+import HomeServiceItem from "./_components/HomeServiceItem" // Importa o novo componente
 
 const Home = async () => {
   const session = await getServerSession(authOptions)
@@ -106,13 +105,8 @@ const Home = async () => {
         </h2>
         <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
           {services.map((service) => (
-            // Nota: O ServiceItem na home não terá um dentista específico,
-            // então você pode querer criar uma versão simplificada ou um link para uma página de serviços.
-            // Por enquanto, vamos omitir a prop 'dentist' aqui ou criar uma lógica para lidar com isso.
-            // <ServiceItem key={service.id} service={service} />
-            <div key={service.id} className="text-center">
-              <p>{service.name}</p>
-            </div>
+            // Usa o novo componente HomeServiceItem
+            <HomeServiceItem key={service.id} service={service} />
           ))}
         </div>
       </div>
