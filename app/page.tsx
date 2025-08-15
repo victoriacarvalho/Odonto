@@ -1,96 +1,127 @@
-import Image from "next/image";
+import Header from "./_components/header"
+import Image from "next/image"
+import { db } from "./_lib/prisma"
+import DentistItem from "./_components/dentist-item" // Renomeado de NavasItem
+import ServiceItem from "./_components/service-item" // Renomeado de ServicesItem
+import AppointmentItem from "./_components/appointment-item" // Renomeado de BookingItem
+import Search from "./_components/search"
+import { getServerSession } from "next-auth"
+import { authOptions } from "./_lib/auth"
+import { ptBR } from "date-fns/locale/pt-BR"
+import { format } from "date-fns"
+import { Key } from "react"
 
-export default function Home() {
+const Home = async () => {
+  const session = await getServerSession(authOptions)
+
+  // Busca os profissionais (dentistas) e os serviços em paralelo
+  const [dentists, services, confirmedAppointments] = await Promise.all([
+    db.user.findMany({
+      where: {
+        role: "DENTISTA",
+      },
+      include: {
+        dentistProfile: true,
+      },
+    }),
+    db.service.findMany({
+      take: 10, // Limita a 10 serviços para a home
+      orderBy: {
+        name: "asc",
+      },
+    }),
+    // Busca agendamentos apenas se houver uma sessão de usuário
+    session?.user
+      ? db.appointment.findMany({
+          where: {
+            patientId: (session.user as any).id,
+            date: {
+              gte: new Date(), // Apenas agendamentos futuros
+            },
+          },
+          include: {
+            service: true,
+            dentist: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            date: "asc",
+          },
+        })
+      : Promise.resolve([]),
+  ])
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div>
+      <Header />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer">
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer">
-            Read our docs
-          </a>
+      <div className="p-5">
+        <h2 className="text-xl font-bold">
+          Olá, {session?.user ? session.user.name?.split(" ")[0] : "bem-vindo"}!
+        </h2>
+        <p className="capitalize">
+          {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
+        </p>
+
+        {/* BUSCA */}
+        <div className="mt-6">
+          <Search />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
+
+        {/* BANNER */}
+        <div className="relative mt-6 h-[150px] w-full">
           <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            alt="Banner"
+            fill
+            className="rounded-xl object-cover"
+            src="/banner.png"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+
+        {/* AGENDAMENTOS */}
+        {confirmedAppointments.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+              Próximos Agendamentos
+            </h2>
+            <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              {confirmedAppointments.map(
+                (appointment: { id: Key | null | undefined }) => (
+                  <AppointmentItem
+                    key={appointment.id}
+                    appointment={appointment}
+                  />
+                ),
+              )}
+            </div>
+          </>
+        )}
+
+        {/* PROFISSIONAIS */}
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          Nossos Profissionais
+        </h2>
+        <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {dentists.map((dentist) => (
+            <DentistItem key={dentist.id} dentist={dentist} />
+          ))}
+        </div>
+
+        {/* SERVIÇOS POPULARES */}
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+          Serviços Populares
+        </h2>
+        <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {services.map((service) => (
+            <ServiceItem key={service.id} service={service} />
+          ))}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+
+export default Home
