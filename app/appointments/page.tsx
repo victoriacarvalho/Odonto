@@ -12,52 +12,54 @@ const AppointmentsPage = async () => {
     return redirect("/")
   }
 
+  const user: any = session.user
+
+  const appointmentsQuery = {
+    include: {
+      service: true,
+      dentist: {
+        include: {
+          dentistProfile: true,
+        },
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+    where: {},
+  }
+
+  if (user.role === "DENTISTA") {
+    appointmentsQuery.where = { dentistId: user.id, date: { gte: new Date() } }
+  } else {
+    appointmentsQuery.where = { patientId: user.id, date: { gte: new Date() } }
+  }
+
+  const finishedAppointmentsQuery = {
+    ...appointmentsQuery,
+    orderBy: {
+      date: "desc",
+    },
+    where: {
+      ...appointmentsQuery.where,
+      date: {
+        lt: new Date(),
+      },
+    },
+  }
+
   const [confirmedAppointments, finishedAppointments] = await Promise.all([
-    db.appointment.findMany({
-      where: {
-        patientId: (session.user as any).id,
-        date: {
-          gte: new Date(),
-        },
-      },
-      include: {
-        service: true,
-        dentist: {
-          include: {
-            dentistProfile: true,
-          },
-        },
-      },
-      orderBy: {
-        date: "asc",
-      },
-    }),
-    db.appointment.findMany({
-      where: {
-        patientId: (session.user as any).id,
-        date: {
-          lt: new Date(),
-        },
-      },
-      include: {
-        service: true,
-        dentist: {
-          include: {
-            dentistProfile: true,
-          },
-        },
-      },
-      orderBy: {
-        date: "desc",
-      },
-    }),
+    db.appointment.findMany(appointmentsQuery),
+    db.appointment.findMany(finishedAppointmentsQuery),
   ])
 
   return (
     <>
       <Header />
       <div className="px-5 py-6">
-        <h1 className="text-xl font-bold">Minhas Consultas</h1>
+        <h1 className="text-xl font-bold">
+          {user.role === "DENTISTA" ? "Meus Agendamentos" : "Minhas Consultas"}
+        </h1>
 
         {confirmedAppointments.length > 0 && (
           <>

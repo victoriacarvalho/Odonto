@@ -30,7 +30,7 @@ const HomeServiceItem = ({ service }: HomeServiceItemProps) => {
           </p>
           {/* Este botão leva para a página com a lista de todos os dentistas */}
           <Button variant="secondary" className="mt-3 w-full" asChild>
-            <Link href="/dentists">Agendar</Link>
+            <Link href="/appointments">Agendar</Link>{" "}
           </Button>
         </div>
       </CardContent>

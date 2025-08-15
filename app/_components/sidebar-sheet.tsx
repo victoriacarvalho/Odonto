@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { signIn, signOut } from "next-auth/react"
-import { Session } from "next-auth" // Importe o tipo Session
+import { Session } from "next-auth"
 
 // Aceite os dados da sessão como uma prop
 interface SidebarSheetProps {
@@ -50,8 +50,10 @@ const SidebarSheet = ({ session }: SidebarSheetProps) => {
                 asChild
               >
                 <Link href="/">
-                  <HomeIcon size={18} />
-                  Início
+                  <>
+                    <HomeIcon size={18} />
+                    Início
+                  </>
                 </Link>
               </Button>
               <Button
@@ -60,8 +62,10 @@ const SidebarSheet = ({ session }: SidebarSheetProps) => {
                 asChild
               >
                 <Link href="/appointments">
-                  <CalendarIcon size={18} />
-                  Agendamentos
+                  <>
+                    <CalendarIcon size={18} />
+                    Agendamentos
+                  </>
                 </Link>
               </Button>
             </div>
