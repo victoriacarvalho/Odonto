@@ -1,3 +1,5 @@
+"use client" // Adicione esta diretiva no topo do ficheiro
+
 import Image from "next/image"
 import { Card, CardContent } from "./ui/card"
 import SidebarSheet from "./sidebar-sheet"
@@ -14,6 +16,7 @@ const Header = () => {
           <Image alt="Logo" width={170} height={38} src="/logo.png" />
         </Link>
 
+        {/* O Sheet e o SidebarSheet agora serão renderizados como parte de um Client Component */}
         <Sheet>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
