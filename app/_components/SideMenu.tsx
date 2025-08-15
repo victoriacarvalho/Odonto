@@ -1,7 +1,7 @@
 "use client"
 
 import { Sheet, SheetTrigger } from "./ui/sheet"
-import { Button } from "./ui/button"
+import { Button } from "@/app/_components/ui/button"
 import { MenuIcon } from "lucide-react"
 import SidebarSheet from "./sidebar-sheet"
 import { useSession } from "next-auth/react" // Importe o useSession aqui

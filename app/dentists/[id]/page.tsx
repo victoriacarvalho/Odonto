@@ -5,7 +5,6 @@ import ServiceItem from "@/app/_components/ServiceItem"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/_lib/auth"
 import Header from "@/app/_components/header"
-import AppointmentItem from "@/app/_components/AppointmentItem"
 
 interface DentistProfilePageProps {
   params: {
@@ -16,8 +15,7 @@ interface DentistProfilePageProps {
 const DentistProfilePage = async ({ params }: DentistProfilePageProps) => {
   const session = await getServerSession(authOptions)
 
-  // Se o usuário logado é um dentista e está acessando sua própria página de perfil,
-  // redirecione-o para a página de agendamentos.
+  // Se o usuário for um dentista e estiver acessando seu próprio perfil, redirecione para os agendamentos
   if (
     session?.user &&
     (session.user as any).role === "DENTISTA" &&
@@ -73,6 +71,7 @@ const DentistProfilePage = async ({ params }: DentistProfilePageProps) => {
                 key={service.id}
                 service={service}
                 dentist={dentist}
+                isAuthenticated={!!session?.user}
               />
             ))}
           </div>

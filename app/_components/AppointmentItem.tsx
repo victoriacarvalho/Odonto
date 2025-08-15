@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet"
 import Image from "next/image"
-import { Button } from "./ui/button"
+import { Button } from "@/app/_components/ui/button"
 import { deleteAppointment } from "../_actions/delete-appointment"
 import { toast } from "sonner"
 import { useState } from "react"

@@ -14,42 +14,48 @@ const AppointmentsPage = async () => {
 
   const user: any = session.user
 
-  const appointmentsQuery = {
+  // Define a consulta base
+  const baseQuery = {
     include: {
       service: true,
+      patient: true, // Incluímos o paciente para exibir o nome no card
       dentist: {
         include: {
           dentistProfile: true,
         },
       },
     },
-    orderBy: {
-      date: "asc",
-    },
-    where: {},
   }
 
-  if (user.role === "DENTISTA") {
-    appointmentsQuery.where = { dentistId: user.id, date: { gte: new Date() } }
-  } else {
-    appointmentsQuery.where = { patientId: user.id, date: { gte: new Date() } }
+  // Adapta a consulta com base na role do usuário
+  const confirmedAppointmentsQuery = {
+    ...baseQuery,
+    where: {
+      date: { gte: new Date() },
+      ...(user.role === "DENTISTA"
+        ? { dentistId: user.id }
+        : { patientId: user.id }),
+    },
+    orderBy: {
+      date: "asc" as const,
+    },
   }
 
   const finishedAppointmentsQuery = {
-    ...appointmentsQuery,
-    orderBy: {
-      date: "desc",
-    },
+    ...baseQuery,
     where: {
-      ...appointmentsQuery.where,
-      date: {
-        lt: new Date(),
-      },
+      date: { lt: new Date() },
+      ...(user.role === "DENTISTA"
+        ? { dentistId: user.id }
+        : { patientId: user.id }),
+    },
+    orderBy: {
+      date: "desc" as const,
     },
   }
 
   const [confirmedAppointments, finishedAppointments] = await Promise.all([
-    db.appointment.findMany(appointmentsQuery),
+    db.appointment.findMany(confirmedAppointmentsQuery),
     db.appointment.findMany(finishedAppointmentsQuery),
   ])
 
@@ -67,7 +73,7 @@ const AppointmentsPage = async () => {
               Confirmadas
             </h2>
             <div className="flex flex-col gap-3">
-              {confirmedAppointments.map((appointment) => (
+              {confirmedAppointments.map((appointment: any) => (
                 <AppointmentItem
                   key={appointment.id}
                   appointment={appointment}
@@ -83,7 +89,7 @@ const AppointmentsPage = async () => {
               Finalizadas
             </h2>
             <div className="flex flex-col gap-3">
-              {finishedAppointments.map((appointment) => (
+              {finishedAppointments.map((appointment: any) => (
                 <AppointmentItem
                   key={appointment.id}
                   appointment={appointment}

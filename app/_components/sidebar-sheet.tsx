@@ -18,7 +18,6 @@ import Link from "next/link"
 import { signIn, signOut } from "next-auth/react"
 import { Session } from "next-auth"
 
-// Aceite os dados da sessão como uma prop
 interface SidebarSheetProps {
   session: Session | null | undefined
 }
@@ -34,7 +33,7 @@ const SidebarSheet = ({ session }: SidebarSheetProps) => {
       </SheetHeader>
 
       {session?.user ? (
-        // Vista para utilizador autenticado
+        // Seção para usuário logado
         <div className="flex h-full flex-col justify-between px-5 py-6">
           <div>
             <div className="flex items-center gap-3">
@@ -80,7 +79,7 @@ const SidebarSheet = ({ session }: SidebarSheetProps) => {
           </Button>
         </div>
       ) : (
-        // Vista para convidado
+        // Seção para usuário não logado
         <div className="flex flex-col gap-3 px-5 py-6">
           <div className="flex items-center gap-2">
             <UserIcon size={32} />
