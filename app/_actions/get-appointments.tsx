@@ -8,6 +8,7 @@ interface GetDayAppointmentsParams {
   date: Date
 }
 
+// Busca os agendamentos para um dentista específico num determinado dia
 export const getDayAppointments = async (params: GetDayAppointmentsParams) => {
   const appointments = await db.appointment.findMany({
     where: {

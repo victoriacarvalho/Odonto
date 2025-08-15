@@ -28,9 +28,9 @@ const HomeServiceItem = ({ service }: HomeServiceItemProps) => {
               currency: "BRL",
             }).format(Number(service.price))}
           </p>
-          {/* Este botão pode levar a uma página de pesquisa ou de serviços no futuro */}
+          {/* Este botão leva para a página com a lista de todos os dentistas */}
           <Button variant="secondary" className="mt-3 w-full" asChild>
-            <Link href={`/dentists`}>Agendar</Link>
+            <Link href="/dentists">Agendar</Link>
           </Button>
         </div>
       </CardContent>

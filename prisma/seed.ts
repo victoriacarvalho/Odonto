@@ -1,22 +1,20 @@
-// prisma/seed.js
+import { PrismaClient, Role, Service } from "@prisma/client"
 
-const { PrismaClient, Role, ServiceCategory } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
   try {
-    console.log("Iniciando o processo de seed...");
+    console.log("Iniciando o processo de seed...")
 
     // 1. Limpar dados antigos na ordem correta
-    await prisma.dentistService.deleteMany({});
-    await prisma.appointment.deleteMany({});
-    await prisma.service.deleteMany({});
-    await prisma.dentistProfile.deleteMany({});
-    await prisma.patientProfile.deleteMany({});
-    await prisma.user.deleteMany({});
-    await prisma.clinic.deleteMany({});
-    console.log("Banco de dados limpo.");
+    await prisma.dentistService.deleteMany({})
+    await prisma.appointment.deleteMany({})
+    await prisma.service.deleteMany({})
+    await prisma.dentistProfile.deleteMany({})
+    await prisma.patientProfile.deleteMany({})
+    await prisma.user.deleteMany({})
+    await prisma.clinic.deleteMany({})
+    console.log("Banco de dados limpo.")
 
     // 2. Criar a Clínica Única
     const clinic = await prisma.clinic.create({
@@ -26,10 +24,10 @@ async function main() {
         phones: "(31) 3852-1234",
         cnpj: "11.222.333/0001-44",
       },
-    });
-    console.log(`Clínica "${clinic.name}" criada.`);
+    })
+    console.log(`Clínica "${clinic.name}" criada.`)
 
-    // 3. Criar o Catálogo Mestre de Serviços
+    // 3. Criar o Catálogo Mestre de Serviços (sem imageUrl)
     const services = await prisma.service.createManyAndReturn({
       data: [
         {
@@ -38,8 +36,6 @@ async function main() {
           price: 150,
           duration: 30,
           category: "DIAGNOSTICO_E_PREVENCAO",
-          imageUrl:
-            "https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png",
         },
         {
           name: "Limpeza e Profilaxia",
@@ -47,8 +43,6 @@ async function main() {
           price: 250,
           duration: 50,
           category: "DIAGNOSTICO_E_PREVENCAO",
-          imageUrl:
-            "https://utfs.io/f/45331760-899c-4b4b-910e-e00babb6ed81-16q.png",
         },
         {
           name: "Restauração em Resina",
@@ -56,8 +50,6 @@ async function main() {
           price: 350,
           duration: 60,
           category: "RESTAURACAO_E_ENDODONTIA",
-          imageUrl:
-            "https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png",
         },
         {
           name: "Clareamento a Laser",
@@ -65,8 +57,6 @@ async function main() {
           price: 1200,
           duration: 90,
           category: "ESTETICA",
-          imageUrl:
-            "https://utfs.io/f/178da6b6-6f9a-424a-be9d-a2feb476eb36-16t.png",
         },
         {
           name: "Tratamento de Canal",
@@ -74,8 +64,6 @@ async function main() {
           price: 950,
           duration: 120,
           category: "RESTAURACAO_E_ENDODONTIA",
-          imageUrl:
-            "https://utfs.io/f/7e309eaa-d722-465b-b8b6-76217404a3d3-16s.png",
         },
         {
           name: "Aparelho Ortodôntico",
@@ -83,8 +71,6 @@ async function main() {
           price: 700,
           duration: 60,
           category: "ORTODONTIA",
-          imageUrl:
-            "https://utfs.io/f/988646ea-dcb6-4f47-8a03-8d4586b7bc21-16v.png",
         },
         {
           name: "Implante Dentário",
@@ -92,14 +78,12 @@ async function main() {
           price: 3000,
           duration: 180,
           category: "IMPLANTODONTIA",
-          imageUrl:
-            "https://utfs.io/f/f64f1bd4-59ce-4ee3-972d-2399937eeafc-16x.png",
         },
       ],
-    });
-    console.log(`${services.length} serviços mestres criados.`);
+    })
+    console.log(`${services.length} serviços mestres criados.`)
 
-    // 4. Criar Profissionais (Dentistas)
+    // 4. Criar Profissionais (Dentistas) (sem profileImageUrl)
     const dentists = [
       {
         user: {
@@ -111,8 +95,6 @@ async function main() {
           croNumber: "MG-12345",
           specialization: "Clínico Geral e Estética",
           bio: "Com 10 anos de experiência, Dr. Carlos é especialista em transformar sorrisos através de restaurações e clareamentos.",
-          profileImageUrl:
-            "https://utfs.io/f/6b0888f8-b69f-4be7-a13b-52d1c0c9cab2-17m.png",
         },
         services: [
           "Consulta e Avaliação",
@@ -131,8 +113,6 @@ async function main() {
           croNumber: "MG-54321",
           specialization: "Ortodontia",
           bio: "Dra. Ana é apaixonada por ortodontia e dedicada a criar alinhamentos perfeitos para sorrisos saudáveis e bonitos.",
-          profileImageUrl:
-            "https://utfs.io/f/ef45effa-415e-416d-8c4a-3221923cd10f-17n.png",
         },
         services: [
           "Consulta e Avaliação",
@@ -150,8 +130,6 @@ async function main() {
           croNumber: "MG-67890",
           specialization: "Implantodontia e Cirurgia",
           bio: "Especialista em cirurgias avançadas e reabilitação oral com implantes, devolvendo a função e a estética.",
-          profileImageUrl:
-            "https://utfs.io/f/a55f0f39-31a0-4819-8796-538d68cc2a0f-17o.png",
         },
         services: [
           "Consulta e Avaliação",
@@ -159,7 +137,7 @@ async function main() {
           "Tratamento de Canal",
         ],
       },
-    ];
+    ]
 
     for (const dentistData of dentists) {
       // Cria o User e o DentistProfile associado
@@ -170,30 +148,30 @@ async function main() {
             create: dentistData.profile,
           },
         },
-      });
-      console.log(`Dentista criado: ${createdUser.name}`);
+      })
+      console.log(`Dentista criado: ${createdUser.name}`)
 
       // 5. Vincular os serviços ao dentista
       for (const serviceName of dentistData.services) {
-        const service = services.find((s) => s.name === serviceName);
+        const service = services.find((s: Service) => s.name === serviceName)
         if (service) {
           await prisma.dentistService.create({
             data: {
               dentistId: createdUser.id,
               serviceId: service.id,
             },
-          });
+          })
         }
       }
-      console.log(` -> Serviços atribuídos a ${createdUser.name}.`);
+      console.log(` -> Serviços atribuídos a ${createdUser.name}.`)
     }
 
-    console.log("Seed concluído com sucesso!");
+    console.log("Seed concluído com sucesso!")
   } catch (error) {
-    console.error("Erro ao executar o seed:", error);
+    console.error("Erro ao executar o seed:", error)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-main();
+main()

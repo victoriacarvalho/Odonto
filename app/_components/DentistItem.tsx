@@ -1,3 +1,4 @@
+// app/_components/DentistItem.tsx (Botão "Ver Perfil")
 import { User, DentistProfile } from "@prisma/client"
 import { Card, CardContent } from "./ui/card"
 import Image from "next/image"
@@ -18,11 +19,7 @@ const DentistItem = ({ dentist }: DentistItemProps) => {
           <Image
             fill
             className="rounded-2xl object-cover"
-            src={
-              dentist.dentistProfile?.profileImageUrl ??
-              dentist.image ??
-              "/banner.png"
-            }
+            src={dentist.dentistProfile?.profileImageUrl ?? "/banner.png"}
             alt={dentist.name ?? "Dentista"}
           />
         </div>
@@ -31,6 +28,7 @@ const DentistItem = ({ dentist }: DentistItemProps) => {
           <p className="truncate text-sm text-gray-400">
             {dentist.dentistProfile?.specialization}
           </p>
+          {/* Este botão leva para a página de perfil do dentista */}
           <Button variant="secondary" className="mt-3 w-full" asChild>
             <Link href={`/dentists/${dentist.id}`}>Ver Perfil</Link>
           </Button>
